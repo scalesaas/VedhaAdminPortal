@@ -114,7 +114,7 @@ export default function Dashboard() {
                 <div className="p-12 text-center text-zinc-500">
                   {/* Replace this div with <NewsTable /> when you create it */}
                   <Newspaper className="w-12 h-12 mx-auto mb-4 opacity-20" />
-                  <h3 className="text-lg font-medium text-zinc-300">News Management</h3>
+                  <h3 className="text-lg font-medium text-zinc-300"> Feed management</h3>
                   <p className="mb-6">Display announcements on the home page.</p>
                   <Link href="/dashboard/news/create">
                     <Button variant="outline" className="border-zinc-700 text-zinc-300 hover:text-white">Create First News Item</Button>
