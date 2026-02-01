@@ -4,9 +4,6 @@ import { ThemeProvider } from '@/components/theme-provider'
 import Sessioprovider from '@/components/session-provider'
 import { Toaster } from "@/components/ui/toaster";
 import { Analytics } from "@vercel/analytics/react"
-
-import ReactQueryProvider from './dashboard/blog/components/query-client-provider/query-client-provider';
-
 import { SpeedInsights } from "@vercel/speed-insights/next"
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -43,7 +40,6 @@ export default function RootLayout({
 
       </head>
       <body>
-        <ReactQueryProvider>
         <ThemeProvider
             attribute="class"
             defaultTheme="light"
@@ -60,7 +56,6 @@ export default function RootLayout({
           </ThemeProvider>
           <Toaster />
           <Sessioprovider/>
-          </ReactQueryProvider>
       </body>
     </html>
   )

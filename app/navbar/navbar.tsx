@@ -1,17 +1,13 @@
 "use client";
 
-import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { useUser } from "@/lib/store/user";
-import Profile from "./profile";
 import Logout from "@/components/logout";
 import { Button } from "@/components/ui/button";
 import { usePathname } from 'next/navigation';
-import logo from "../../public/logoashish.png";
-import Image from "next/image";
-import { Menu, X, ChevronDown, LayoutDashboard } from "lucide-react";
-import { Playfair_Display, Lora } from 'next/font/google';
+import { Menu, X, ChevronDown, LayoutDashboard, User, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,225 +17,142 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-// Setup Fonts
-const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair" });
-const lora = Lora({ subsets: ["latin"], variable: "--font-lora" });
-
-export default function Navbar() {
+export default function SlickNavbar() {
   const pathname = usePathname();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
+  const [scrolled, setScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
   const user = useUser((state) => state.user);
 
+  // Simple scroll tracker
   useEffect(() => {
-    setIsLoggedIn(!!user?.id);
-  }, [user]);
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
-  // Scroll Logic for Auto-Hide
-  useEffect(() => {
-    const controlNavbar = () => {
-      const currentScrollY = window.scrollY;
-      if (currentScrollY < 10) {
-        setIsVisible(true);
-      } else if (currentScrollY > lastScrollY && currentScrollY > 100) {
-        setIsVisible(false);
-      } else if (currentScrollY < lastScrollY) {
-        setIsVisible(true);
-      }
-      setLastScrollY(currentScrollY);
-    };
-
-    window.addEventListener('scroll', controlNavbar);
-    return () => window.removeEventListener('scroll', controlNavbar);
-  }, [lastScrollY]);
-
-  // Mobile Menu Click Outside
-  useEffect(() => {
-    const handleClickOutside = () => setIsMobileMenuOpen(false);
-    if (isMobileMenuOpen) document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
-  }, [isMobileMenuOpen]);
-
-  const toggleMobileMenu = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    setIsMobileMenuOpen(!isMobileMenuOpen);
-  };
+  const navLinks = [
+  
+    { name: "Feed", href: "/dashboard/feed" }, // Updated for your new mobile feed
+    { name: "Books", href: "/dashboard/Books" },
+  ];
 
   return (
-    <div 
+    <header
       className={cn(
-        "fixed w-full z-50 transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)]",
-        playfair.variable, 
-        lora.variable,
-        isVisible ? "translate-y-0" : "-translate-y-full"
+        "fixed top-0 w-full z-50 transition-all duration-300 px-4 pt-4",
+        scrolled ? "pt-2" : "pt-4"
       )}
     >
-      <nav 
+      <nav
         className={cn(
-          "relative border-b transition-colors duration-300",
-          // Scroll Logic: Dark background with Blur when scrolling
-          lastScrollY > 10 
-            ? "bg-[#09090B]/90 border-zinc-800 backdrop-blur-md" 
-            : "bg-[#09090B] border-transparent"
+          "max-w-5xl mx-auto flex items-center justify-between px-6 h-14 rounded-full transition-all duration-300 border",
+          scrolled 
+            ? "bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border-zinc-200 dark:border-zinc-800 shadow-sm" 
+            : "bg-transparent border-transparent"
         )}
       >
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20 md:h-24">
-            
-            {/* Logo Section */}
-            <div className="flex items-center shrink-0">
-              <Link href="/" className="flex items-center gap-2 group">
-                <div className="relative overflow-hidden">
-                  Admin portal
-                  {/* <Image
-                    src={logo}
-                    alt="Little Dreamers"
-                    height={120}
-                    width={120}
-                    // Added 'invert' to make black logo white. Remove if logo is already white.
-                    className="h-12 w-auto object-contain md:h-14 opacity-90 transition-opacity group-hover:opacity-100 invert" 
-                  /> */}
-                </div>
-              </Link>
-            </div>
-
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center gap-8">
-              {['Courses', 'Blogs'].map((item) => (
-                <Link 
-                  key={item}
-                  href={`/${item.toLowerCase()}`} 
-                  className="relative group py-2"
-                >
-                  <span className={`font-lora text-lg transition-colors ${
-                    pathname === `/${item.toLowerCase()}` 
-                      ? 'text-white font-medium' 
-                      : 'text-zinc-400 group-hover:text-zinc-100'
-                  }`}>
-                    {item}
-                  </span>
-                  {/* Underline Effect (White for Dark Mode) */}
-                  <span className="absolute bottom-0 left-0 w-full h-[1px] bg-white scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left ease-out" />
-                </Link>
-              ))}
-            </div>
-
-            {/* Desktop User Actions */}
-            <div className="hidden md:flex items-center gap-4">
-              {user?.id ? (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <button className="flex items-center gap-2 pl-2 pr-1 py-1 rounded-full bg-white/20 hover:bg-white/10 transition-colors focus:outline-none border border-transparent hover:border-zinc-700">
-                      {/* <span className="font-lora text-sm font-medium text-zinc-300 ml-2">Account</span> */}
-                      {/* <div className="h-10 w-10 rounded-full overflow-hidden border border-zinc-700">
-                        <Profile />
-                      </div> */}
-                      {user.email}
-                      <ChevronDown className="w-4 h-4 text-zinc-500 mr-2" />
-                    </button>
-                  </DropdownMenuTrigger>
-                  
-                  {/* Dark Mode Dropdown */}
-                  <DropdownMenuContent className="w-56 mt-2 bg-[#18181B] border-zinc-800 text-zinc-100 shadow-2xl rounded-xl font-lora" align="end">
-                    <DropdownMenuLabel className="font-playfair text-lg font-normal text-white">
-                      My Account
-                    </DropdownMenuLabel>
-                    <DropdownMenuSeparator className="bg-zinc-800" />
-                    <DropdownMenuItem className="focus:bg-zinc-800 cursor-pointer focus:text-white">
-                      <Link href="/dashboard" className="w-full flex items-center gap-2">
-                        <LayoutDashboard className="w-4 h-4" />
-                        Dashboard
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="focus:bg-zinc-800 cursor-pointer focus:text-white">
-                      <Link href="/profile" className="w-full">
-                         Profile Settings
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator className="bg-zinc-800" />
-                    <DropdownMenuItem className="focus:bg-red-900/20 cursor-pointer">
-                      <Link href="/login" className="w-full text-red-400 font-medium flex items-center gap-2">
-                        <Logout /> 
-                        {/* <span className="text-sm">Sign Out</span> */}
-                      </Link>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              ) : (
-                <Link href="/login">
-                  <Button 
-                    variant="ghost" 
-                    className="rounded-full bg-white text-black font-lora px-6 py-5 text-base hover:bg-zinc-200 transition-all hover:scale-105 active:scale-95 shadow-sm"
-                  >
-                    Start Reading
-                  </Button>
-                </Link>
-              )}
-            </div>
-
-            {/* Mobile Menu Toggle */}
-            <div className="md:hidden flex items-center">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={toggleMobileMenu}
-                className="h-10 w-10 p-0 hover:bg-transparent text-white"
-              >
-                {isMobileMenuOpen ? <X className="h-6 w-6 stroke-[1.5]" /> : <Menu className="h-6 w-6 stroke-[1.5]" />}
-              </Button>
-            </div>
+        {/* Brand */}
+        <Link href="/" className="flex items-center gap-2">
+          <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+            <span className="text-white font-bold text-xs">AP</span>
           </div>
+          <span className="font-semibold tracking-tight text-zinc-900 dark:text-white hidden sm:block">
+            AdminPortal
+          </span>
+        </Link>
+
+        {/* Desktop Links */}
+        <div className="hidden md:flex items-center gap-1">
+          {navLinks.map((link) => (
+            <Link
+              key={link.name}
+              href={link.href}
+              className={cn(
+                "px-4 py-1.5 rounded-full text-sm font-medium transition-colors",
+                pathname === link.href
+                  ? "bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white"
+                  : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200"
+              )}
+            >
+              {link.name}
+            </Link>
+          ))}
         </div>
 
-        {/* Mobile Navigation Panel (Dark Mode) */}
-        <div 
-          className={`md:hidden overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] bg-[#09090B] border-b border-zinc-800 ${
-            isMobileMenuOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
-          }`}
-        >
-          <div className="px-6 py-6 space-y-4 font-lora">
-            <Link 
-              href="/courses" 
-              className="block text-2xl text-zinc-100 py-2 border-b border-zinc-800"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Courses
+        {/* Actions */}
+        <div className="flex items-center gap-3">
+          {user?.id ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="flex items-center gap-2 outline-none group">
+                  <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center border border-indigo-200 dark:border-indigo-800 transition-transform group-active:scale-95">
+                    <User className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                  </div>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56 mt-2 rounded-2xl shadow-xl border-zinc-200 dark:border-zinc-800">
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none">Admin Account</p>
+                    <p className="text-xs leading-none text-zinc-500">{user.email}</p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link href="/dashboard" className="cursor-pointer flex items-center gap-2">
+                    <LayoutDashboard className="w-4 h-4" /> Dashboard
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/profile" className="cursor-pointer flex items-center gap-2">
+                    <User className="w-4 h-4" /> Profile Settings
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="text-red-600 dark:text-red-400 focus:bg-red-50 dark:focus:bg-red-900/10 cursor-pointer">
+                  <div className="flex items-center gap-2 w-full">
+                    <LogOut className="w-4 h-4" />
+                    <Logout />
+                  </div>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Link href="/login">
+              <Button size="sm" className="rounded-full bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 px-5">
+                Login
+              </Button>
             </Link>
-            <Link 
-              href="/blogs" 
-              className="block text-2xl text-zinc-100 py-2 border-b border-zinc-800"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Blogs
-            </Link>
-            
-            <div className="pt-6 pb-4">
-              {!user?.id ? (
-                 <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
-                   <Button className="w-full rounded-full bg-white text-black font-lora py-6 text-lg hover:bg-zinc-200">
-                     Login / Register
-                   </Button>
-                 </Link>
-              ) : (
-                <div className="flex flex-col gap-4">
-                   <Link href="/dashboard" className="text-lg text-zinc-400 hover:text-white" onClick={() => setIsMobileMenuOpen(false)}>
-                     Dashboard
-                   </Link>
-                   <Link href="/profile" className="text-lg text-zinc-400 hover:text-white" onClick={() => setIsMobileMenuOpen(false)}>
-                     My Profile
-                   </Link>
-                   <div className="text-red-500">
-                      <Logout />
-                   </div>
-                </div>
-              )}
-            </div>
-          </div>
+          )}
+
+          {/* Mobile Toggle */}
+          <button 
+            className="md:hidden p-1 text-zinc-600 dark:text-zinc-400"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
         </div>
       </nav>
-    </div>
+
+      {/* Mobile Menu */}
+      <div className={cn(
+        "absolute top-full left-4 right-4 mt-2 p-4 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl transition-all duration-300 md:hidden",
+        isMobileMenuOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none"
+      )}>
+        <div className="flex flex-col gap-2">
+          {navLinks.map((link) => (
+            <Link
+              key={link.name}
+              href={link.href}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="px-4 py-3 rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-800 text-sm font-medium"
+            >
+              {link.name}
+            </Link>
+          ))}
+        </div>
+      </div>
+    </header>
   );
 }

@@ -51,20 +51,22 @@
 	
 
 
-export type IBlogDetial = {
-	created_at: string;
-	id: string;
-	image: string;
-	title: string;
-	status:boolean;
-	meta_description: string;
-	meta_tiltle: string;
-	coments_enabled: boolean;
-	published_at: string;
-	slug:string;
-	content:string;
-	author:string;
-};
+export interface IBookSubmit {
+  title: string;
+  slug: string;
+  author_sage: string; // The Sage or Translator
+  scripture_type: string; // Veda, Upanishad, Purana, Itihasa
+  description: string;
+  cover_image: string;
+  language: string;
+  category_id: string;
+  instructor: string;
+  created_at: string;
+  original_sanskrit_available: boolean;
+}
+
+
+
 export type IchapterDetails = {
 	catagory_id: number
 	chapter_name: string | null

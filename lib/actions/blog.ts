@@ -2,11 +2,10 @@
 import { createSupabaseServerClient } from "@/lib/supabase";
 import { IBlog, Icourse, IModule } from "@/lib/types";
 import { revalidatePath, unstable_noStore } from "next/cache";
-import { BlogFormSchema, BlogFormSchemaType, Chapterformschematype , CourseFormSchematype } from "../../app/dashboard/blog/schema";
 const DASHBOARD = "/dashboard/blog";
 import slugify from "slugify";
 
-export async function createBlog(data: {
+export async function createBook(data: {
 	content: string;
 	title: string;
 	image: string;
@@ -48,6 +47,48 @@ export async function createNews(data: {
 }
 
 
+export interface IFeedItem {
+    title: string;
+    slug: string;
+    featured_image: string;
+    content: string;
+    category: string;
+    cta_label?: string;
+    cta_url?: string;
+    is_published: boolean;
+    author: string;
+    created_at: string;
+}
+
+export async function createFeedPost(data: IFeedItem) {
+	const supabase = await createSupabaseServerClient();
+    const result = await supabase
+        .from("feed") // Updated table name
+        .insert([
+            {
+                title: data.title,
+                slug: data.slug,
+                featured_image: data.featured_image,
+                content: data.content,
+                category: data.category,
+                cta_label: data.cta_label,
+                cta_url: data.cta_url,
+                is_published: data.is_published,
+                author: data.author,
+                created_at: new Date().toISOString(),
+            },
+        ])
+        .select()
+        .single();
+
+    // 2. Clear cache so the new post appears immediately in the app/dashboard
+    revalidatePath("/dashboard/feed");
+    revalidatePath("/"); // If your home feed is on the root
+
+    return result;
+}
+
+
 export async function createLinks(data: {
 	title: string;
 	image: string;
@@ -67,7 +108,7 @@ export async function createLinks(data: {
     return LinkssResult;
 }
 
-export async function createJob(data: {
+export async function updateCoursebyid(data: {
 	title: string;
 	image: string;
 	author:string;
@@ -428,15 +469,14 @@ export async function readnewsbyadmin() {
 		
 }
 
-export async function Coursebyadmin() {
+export async function Booksbyadmin() {
 	await new Promise((resolve) => setTimeout(resolve, 2000));
 
 	const supabase = await createSupabaseServerClient();
 
 	return supabase
-		.from("course")
+		.from("books")
 		.select("*")
-		.eq('instructor', '8264f667-b643-4fdb-bfdc-8ce0982d3aff' )
 		.order("created_at", { ascending: true });
 		
 }
@@ -510,63 +550,11 @@ export async function updateBlogById(blogId: string, data: IBlog) {
 	return JSON.stringify(result);
 }
 
-export async function updateBlogDetail(
-	id: string,
-	data: BlogFormSchemaType
-) {
-	const supabase = await createSupabaseServerClient();
-	const resultBlog = await supabase
-		.from("govtblog")
-		.update(data)
-		.eq("id", id);
-	if (resultBlog) {
-		return (resultBlog);
-	} else {
-		revalidatePath(DASHBOARD);
-	}
-}
 
 
 
 
-export async function updatechapter(
-	id: number,
-	data: Chapterformschematype
-) {
-	const supabase = await createSupabaseServerClient();
-	const resultchapter = await supabase
-		.from("chapters")
-		.update(data)
-		.eq("id", id);
-		console.log(data);
 
-	
-	if (resultchapter) {
-		console.log(resultchapter);
-		return (resultchapter);
-	} else {
-		revalidatePath(DASHBOARD);
-	}
-}
-
-export async function updateCoursebyid(
-	id: string,
-	data: CourseFormSchematype
-) {
-	const supabase = await createSupabaseServerClient();
-	const resultcourse = await supabase
-		.from("course")
-		.update(data)
-		.eq("id", id);
-	console.log(data);
-
-	if (resultcourse) {
-		console.log(resultcourse);
-		return (resultcourse);
-	} else {
-		revalidatePath(DASHBOARD);
-	}
-}
 
 export async function deleteBlogById(blogId: string) {
 	console.log("deleting blog post")

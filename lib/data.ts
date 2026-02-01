@@ -1,5 +1,5 @@
 import { boolean } from "zod";
-import { IBlogDetial , Icourse, IchapterDetails, IcourseSubmit , INews , IJob, ILink} from "./types";
+import {  Icourse, IchapterDetails, IcourseSubmit , INews , IJob, ILink, IBookSubmit} from "./types";
 import { Coments } from "./types";
 export const blogDeafultValue = `
 ## Serendipity Chronicles: Tales from a Random Blog
@@ -76,19 +76,18 @@ export const blogs = [
 	},
 ];
 
-export const defaultBlog: IBlogDetial = {
-	id: " ",
-	created_at: "",
-	image: "",
-	title: "",
-	status: true,
-	meta_description: "",
-	meta_tiltle: "",
-	coments_enabled: true,
-	published_at: "",
-	slug: "",	
-	content:"",	
-	author: "",
+export const defaultBookData: IBookSubmit = {
+	  title: "",
+  slug: "",
+  author_sage: "",// The Sage or Translator
+  scripture_type: "",// Veda, Upanishad, Purana, Itihasa
+  description: "",
+  cover_image: "",
+  language: "",
+  category_id: "",
+  instructor: "",
+  created_at: "",
+  original_sanskrit_available: true
 
 };
 

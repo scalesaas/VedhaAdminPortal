@@ -1,9 +1,4 @@
 import React from "react";
-import Navbar from "../navbar/navbar";
-import BlogTable from "./blog/components/BlogTable"; // Keep your existing table
-// import NewsTable from "./news/components/NewsTable"; // Placeholder for your new tables
-// import JobsTable from "./jobs/components/JobsTable"; // Placeholder for your new tables
-
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -27,49 +22,22 @@ export default function Dashboard() {
   // Expanded Dashboard Data
   const dashboardSections = [
     {
-      title: "Articles",
-      description: "Manage articles & SEO",
-      href: "/dashboard/blog",
-      buttonText: "My Articles",
+      title: "Feed",
+      description: "Manage feed",
+      href: "/dashboard/feed/create",
+      buttonText: "Feed",
       count: "12 posts",
       icon: <FileText className="h-5 w-5 text-indigo-400" />,
       color: "group-hover:shadow-[0_0_20px_rgba(99,102,241,0.15)] group-hover:border-indigo-500/50"
     },
     {
-      title: "Courses",
+      title: "Books",
       description: "Curriculum & students",
-      href: "/dashboard/course",
-      buttonText: "My Courses",
-      count: "5 courses",
+      href: "/dashboard/Books",
+      buttonText: "My Books",
+      count: "5 books",
       icon: <GraduationCap className="h-5 w-5 text-purple-400" />,
       color: "group-hover:shadow-[0_0_20px_rgba(168,85,247,0.15)] group-hover:border-purple-500/50"
-    },
-    {
-      title: "News & Updates",
-      description: "Announcements for home",
-      href: "/dashboard/news",
-      buttonText: "All News",
-      count: "3 active",
-      icon: <Newspaper className="h-5 w-5 text-orange-400" />,
-      color: "group-hover:shadow-[0_0_20px_rgba(251,146,60,0.15)] group-hover:border-orange-500/50"
-    },
-    {
-      title: "Important Links",
-      description: "Quick links for sidebar",
-      href: "/dashboard/links",
-      buttonText: "Manage Links",
-      count: "8 links",
-      icon: <Link2 className="h-5 w-5 text-emerald-400" />,
-      color: "group-hover:shadow-[0_0_20px_rgba(52,211,153,0.15)] group-hover:border-emerald-500/50"
-    },
-    {
-      title: "Jobs / Careers",
-      description: "Openings & hiring",
-      href: "/dashboard/jobs",
-      buttonText: "Open Roles",
-      count: "2 open",
-      icon: <Briefcase className="h-5 w-5 text-pink-400" />,
-      color: "group-hover:shadow-[0_0_20px_rgba(244,114,182,0.15)] group-hover:border-pink-500/50"
     },
     {
       title: "Media Gallery",
@@ -77,15 +45,6 @@ export default function Dashboard() {
       href: "/dashboard/images",
       buttonText: "View Gallery",
       count: "248 files",
-      icon: <ImageIcon className="h-5 w-5 text-cyan-400" />,
-      color: "group-hover:shadow-[0_0_20px_rgba(34,211,238,0.15)] group-hover:border-cyan-500/50"
-    },
-    {
-      title: "steno",
-      description: "steno and graphy",
-      href: "/dashboard/stenography/create",
-      buttonText: "View steno",
-      count: "20 files",
       icon: <ImageIcon className="h-5 w-5 text-cyan-400" />,
       color: "group-hover:shadow-[0_0_20px_rgba(34,211,238,0.15)] group-hover:border-cyan-500/50"
     }
@@ -141,19 +100,15 @@ export default function Dashboard() {
                 <p className="text-sm text-zinc-400">View and edit your latest entries</p>
               </div>
               <TabsList className="bg-zinc-900 border border-zinc-800">
-                <TabsTrigger value="blogs" className="data-[state=active]:bg-zinc-800 data-[state=active]:text-white text-zinc-400">Blogs</TabsTrigger>
-                <TabsTrigger value="news" className="data-[state=active]:bg-zinc-800 data-[state=active]:text-white text-zinc-400">News</TabsTrigger>
-                <TabsTrigger value="jobs" className="data-[state=active]:bg-zinc-800 data-[state=active]:text-white text-zinc-400">Jobs</TabsTrigger>
+                <TabsTrigger value="blogs" className="data-[state=active]:bg-zinc-800 data-[state=active]:text-white text-zinc-400">Feed</TabsTrigger>
+                <TabsTrigger value="news" className="data-[state=active]:bg-zinc-800 data-[state=active]:text-white text-zinc-400">chapters</TabsTrigger>
+                <TabsTrigger value="jobs" className="data-[state=active]:bg-zinc-800 data-[state=active]:text-white text-zinc-400">Books</TabsTrigger>
               </TabsList>
             </div>
 
             {/* Tab Contents */}
             <div className="p-0 min-h-[400px]">
-              
-              <TabsContent value="blogs" className="m-0 border-none outline-none">
-                 {/* Your Existing Blog Table */}
-                 <BlogTable />
-              </TabsContent>
+
 
               <TabsContent value="news" className="m-0 border-none outline-none">
                 <div className="p-12 text-center text-zinc-500">
